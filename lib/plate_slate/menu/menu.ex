@@ -122,14 +122,12 @@ defmodule PlateSlate.Menu do
 
   """
   def list_items(%{matching: name}) when is_binary(name) do
-    IO.puts("ARGS HERE")
     Item
     |> where([m], ilike(m.name, ^"%#{name}%"))
     |> Repo.all
   end
 
   def list_items(_) do
-    IO.puts("ARGS not HERE")
     Repo.all(Item)
   end
 
