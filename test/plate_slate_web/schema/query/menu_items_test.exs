@@ -39,7 +39,7 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
            }
   end
 
-  @query """
+  @query_by_name """
   {
     menuItems(matching: "reu") {
       name
@@ -48,7 +48,7 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   """
 
   test "menuItems field returns menu items filtered by name" do
-    response = get(build_conn(), "/api", query: @query)
+    response = get(build_conn(), "/api", query: @query_by_name)
     assert json_response(response, 200) == %{
              "data" => %{
                "menuItems" => [
@@ -59,17 +59,35 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
            }
   end
 
-  @query """
+  @query_with_error """
     {
       menuItems(matching: 123){
         name
-    }
+      }
     }
   """
 
   test "menuItems field returns errors when using a bad value" do
-    response = get(build_conn(), "/api", query: @query)
+    response = get(build_conn(), "/api", query: @query_with_error)
     assert %{"errors" => [%{"message" => message}]} = json_response(response, 400)
     assert message == "Argument \"matching\" has invalid value 123."
   end
+
+  @query_with_vars """
+    query ($term: String){
+      menuItems(matching: $term) {
+        name
+      }
+    }
+  """
+  @variables %{"term" => "reu"}
+  test "menuItems field filters by name when using a variable" do
+    response = get(build_conn(), "/api", query: @query_with_vars, variables: @variables)
+    assert json_response(response, 200) == %{
+             "data" => %{
+               "menuItems" => [%{"name" => "Reuben"}]
+             }
+           }
+  end
+
 end
