@@ -2,7 +2,7 @@ defmodule PlateSlateWeb.Resolvers.Menu do
   @moduledoc false
   alias PlateSlate.Menu
 
-  def menu_items(_, args, _ ) do
+  def menu_items(_, args, _) do
     {:ok, Menu.list_items(args)}
   end
 
