@@ -16,16 +16,24 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   test "menuItems field returns menu items" do
     conn = build_conn()
     conn = get(conn, "/api", query: @query)
+
     assert json_response(conn, 200) == %{
              "data" => %{
                "menuItems" => [
                  %{"name" => "Bánh mì"},
-                 %{"name" => "Chocolate Milkshake"}, %{"name" => "Croque Monsieur"},
-                 %{"name" => "French Fries"}, %{"name" => "Lemonade"},
-                 %{"name" => "Masala Chai"}, %{"name" => "Muffuletta"}, %{"name" => "Papadum"},
-                 %{"name" => "Pasta Salad"}, %{"name" => "Reuben"},
-                 %{"name" => "Soft Drink"}, %{"name" => "Vada Pav"},
-                 %{"name" => "Vanilla Milkshake"}, %{"name" => "Water"}
+                 %{"name" => "Chocolate Milkshake"},
+                 %{"name" => "Croque Monsieur"},
+                 %{"name" => "French Fries"},
+                 %{"name" => "Lemonade"},
+                 %{"name" => "Masala Chai"},
+                 %{"name" => "Muffuletta"},
+                 %{"name" => "Papadum"},
+                 %{"name" => "Pasta Salad"},
+                 %{"name" => "Reuben"},
+                 %{"name" => "Soft Drink"},
+                 %{"name" => "Vada Pav"},
+                 %{"name" => "Vanilla Milkshake"},
+                 %{"name" => "Water"}
                  # Rest of items
                ]
              }
@@ -42,13 +50,13 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
 
   test "menuItems field returns menu items filtered by name" do
     response = get(build_conn(), "/api", query: @query_by_name)
+
     assert json_response(response, 200) == %{
              "data" => %{
                "menuItems" => [
                  %{"name" => "Reuben"}
                ]
              }
-
            }
   end
 
@@ -63,7 +71,9 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   test "menuItems field returns errors when using a bad value" do
     response = get(build_conn(), "/api", query: @query_with_error)
     assert %{"errors" => [%{"message" => message}]} = json_response(response, 400)
-    assert message == "Argument \"filter\" has invalid value {name: 123}.\nIn field \"name\": Expected type \"String\", found 123."
+
+    assert message ==
+             "Argument \"filter\" has invalid value {name: 123}.\nIn field \"name\": Expected type \"String\", found 123."
   end
 
   @query_with_vars """
@@ -76,6 +86,7 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   @variables %{"term" => "reu"}
   test "menuItems field filters by name when using a variable" do
     response = get(build_conn(), "/api", query: @query_with_vars, variables: @variables)
+
     assert json_response(response, 200) == %{
              "data" => %{
                "menuItems" => [%{"name" => "Reuben"}]
@@ -90,6 +101,7 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   """
   test "menuItems field returns menuItems, filtering with a literal" do
     response = get(build_conn(), "/api", query: @query_with_filter)
+
     assert %{
       "data" => %{"menuItems" => [%{"name" => "Vada Pav"}]} == json_response(response, 200)
     }
@@ -109,20 +121,21 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
   }
   test "menuItems filtered by custom scalar" do
     sides = PlateSlate.Repo.get_by!(PlateSlate.Menu.Category, name: "Sides")
+
     %PlateSlate.Menu.Item{
       name: "Garlic Fries",
       added_on: ~D[2017-01-01],
       price: 2.50,
       category: sides
     }
-    |> PlateSlate.Repo.insert!
+    |> PlateSlate.Repo.insert!()
 
     response = get(build_conn(), "/api", query: @query_added_before, variables: @variables)
+
     assert %{
       "data" => %{
         "menuItems" => [%{"name" => "Garlic Fries", "addedOn" => "2017-01-01"}]
       }
     }
   end
-
 end
