@@ -32,7 +32,6 @@ defmodule PlateSlateWeb.Resolvers.Menu do
     |> Enum.map(fn {key, value} -> %{key: key, message: value} end)
   end
 
-
   @spec format_error(Ecto.Changeset.error()) :: String.t()
   defp format_error({msg, opts}) do
     Enum.reduce(
@@ -43,7 +42,6 @@ defmodule PlateSlateWeb.Resolvers.Menu do
       end
     )
   end
-
 
   def error_details(changeset) do
     changeset
